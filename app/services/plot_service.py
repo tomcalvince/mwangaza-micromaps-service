@@ -15,13 +15,24 @@ class PlotService:
 
     async def get_project_plots(self, project_id: int) -> list[PlotGeometry]:
         return await self.repository.get_all_by_project(project_id)
+
+    async def get_plot(self, project_id: int, plot_id: uuid.UUID) -> PlotGeometry:
+        plot = await self.repository.get_by_id(plot_id, project_id)
+        if not plot:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Plot geometry {plot_id} not found in project {project_id}",
+            )
+        return plot
     
     async def create_plot(self, project_id: int, data: PlotGeometryCreate):
-        existing = await self.repository.get_all_by_project(project_id)
-        if existing:
+        duplicate = await self.repository.get_by_external_plot_id(
+            data.external_plot_id, project_id
+        )
+        if duplicate:
             raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Plot geometries already exist for this project. Please update the existing geometry instead of creating a new one."
+                status_code=status.HTTP_409_CONFLICT,
+                detail=f"Plot with external_plot_id {data.external_plot_id} already exists in project {project_id}",
             )
         plot = await self.repository.create(
             project_id=project_id,

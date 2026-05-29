@@ -4,7 +4,7 @@ from sqlalchemy import create_engine, pool
 from alembic import context
 from app.core.config import settings
 from app.core.database import Base
-from app.db.models import PlotGeometry, GeometryHistory
+from app.db.models import PlotGeometry, GeometryHistory, ProjectPlanAsset
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config

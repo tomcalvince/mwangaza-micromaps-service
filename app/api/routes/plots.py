@@ -32,6 +32,15 @@ async def get_project_plots(
     )
 
 
+@router.get("/{plot_id}", response_model=PlotGeometryResponse)
+async def get_plot_geometry(
+    project_id: int,
+    plot_id: uuid.UUID,
+    service: PlotService = Depends(get_plot_service),
+):
+    return await service.get_plot(project_id, plot_id)
+
+
 @router.post("", response_model=PlotGeometryResponse, status_code=status.HTTP_201_CREATED)
 async def create_plot_geometry(
     project_id: int,
